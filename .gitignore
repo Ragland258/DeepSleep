@@ -1,0 +1,65 @@
+# Visual Studio
+.vs/
+*.sln.docstates
+*.user
+*.suo
+*.userprefs
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache files
+*.cache
+*.ilk
+*.log
+*.obj
+*.iobj
+*.ipdb
+*.tlog
+*.lastbuildstate
+*.FileListAbsolute.txt
+*.Build.CppClean.log
+*.pdb
+*.idb
+*.res
+*.exp
+*.ilk
+*.lib
+*.meta
+*.ncb
+*.sdf
+*.o
+*.opensdf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Release package binaries (but keep source code)
+ReleasePackage/DeepSleep.exe
+ReleasePackage/*.dll
+
+# BaiduYun upload configs
+*.baiduyun.uploading.cfg
+
+# NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# Visual Studio temporary files
+[Tt]emp/
+[Rr]elease*.zip

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型配置 - DeepSleep AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .config-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* 左侧边栏 */
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            border-right: 1px solid #e5e5e5;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .sidebar-header h1 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+        
+        .back-btn:hover {
+            color: #10a37f;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: 10px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .nav-item.active {
+            background: #e6f4ff;
+            color: #10a37f;
+            border-right: 3px solid #10a37f;
+        }
+        
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .content-header {
+            background: #fff;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .content-header h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .content-header p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 标签页 */
+        .tabs {
+            display: flex;
+            gap: 30px;
+            padding: 0 30px;
+            background: #fff;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .tab {
+            padding: 15px 0;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover {
+            color: #333;
+        }
+        
+        .tab.active {
+            color: #10a37f;
+            border-bottom-color: #10a37f;
+        }
+        
+        /* 内容区域 */
+        .content-body {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        /* 提供商列表 */
+        .provider-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-header h3 {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .add-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #10a37f;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .add-btn:hover {
+            background: #0d8c6d;
+        }
+        
+        /* 提供商卡片 */
+        .provider-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .provider-card {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .provider-card:hover {
+            border-color: #10a37f;
+            background: #f9f9f9;
+        }
+        
+        .provider-card.active {
+            border-color: #10a37f;
+            background: #e6f4ff;
+        }
+        
+        .provider-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .provider-info {
+            flex: 1;
+        }
+        
+        .provider-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .provider-url {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .provider-status {
+            padding: 4px 10px;
+            background: #e6f4ff;
+            color: #10a37f;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        /* 配置表单 */
+        .config-form {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .form-header h3 {
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .save-btn {
+            padding: 8px 20px;
+            background: #10a37f;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .save-btn:hover {
+            background: #0d8c6d;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group label .required {
+            color: #dc3545;
+            margin-left: 2px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #10a37f;
+        }
+        
+        .form-group input::placeholder {
+            color: #999;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 6px;
+        }
+        
+        .delete-btn {
+            padding: 8px 20px;
+            background: #fff;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .delete-btn:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+        
+        /* 模型列表 */
+        .models-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e5e5;
+        }
+        
+        .models-section h4 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .model-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .model-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+        
+        .model-name {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .model-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .model-actions button {
+            padding: 4px 12px;
+            font-size: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-test {
+            background: #e6f4ff;
+            color: #10a37f;
+        }
+        
+        .btn-delete {
+            background: #fee;
+            color: #dc3545;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            color: #ddd;
+        }
+        
+        .empty-state h3 {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+        }
+        
+        /* 预设配置 */
+        .preset-section {
+            background: #f9f9f9;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .preset-section h4 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .preset-btn {
+            padding: 6px 12px;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .preset-btn:hover {
+            border-color: #10a37f;
+            color: #10a37f;
+        }
+    </style>
+</head>
+<body>
+    <div class="config-container">
+        <!-- 左侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>DeepSleep AI</h1>
+                <a href="index.html" class="back-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    返回聊天
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                        <line x1="8" y1="21" x2="16" y2="21"/>
+                        <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                    模型提供商
+                </div>
+                <div class="nav-item" onclick="location.href='prompt-config.html'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    系统提示词
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <div class="content-header">
+                <h2>模型提供商</h2>
+                <p>配置对话使用的 AI 模型。支持 LM Studio、DeepSeek、豆包、Kimi 等多种模型。</p>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active">对话</div>
+            </div>
+            
+            <div class="content-body">
+                <!-- 提供商列表 -->
+                <div class="provider-section">
+                    <div class="section-header">
+                        <h3>提供商列表</h3>
+                        <button class="add-btn" onclick="showAddForm()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                                <path d="M12 5v14M5 12h14"/>
+                            </svg>
+                            添加
+                        </button>
+                    </div>
+                    <div class="provider-list" id="providerList">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 配置表单 -->
+                <div id="configForm" style="display: none;">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="websocket.js"></script>
+    <script>
+        let currentUser = null;
+        let providers = [];
+        let selectedProvider = null;
+        
+        // 预设配置
+        const presets = {
+            lmstudio: {
+                name: 'LM Studio',
+                base_url: 'http://localhost:1234/v1',
+                api_key: '',
+                model_name: 'local-model'
+            },
+            ollama: {
+                name: 'Ollama',
+                base_url: 'http://localhost:11434/v1',
+                api_key: '',
+                model_name: 'llama2'
+            },
+            deepseek: {
+                name: 'DeepSeek',
+                base_url: 'https://api.deepseek.com/v1',
+                api_key: '',
+                model_name: 'deepseek-chat'
+            },
+            doubao: {
+                name: '豆包',
+                base_url: 'https://ark.cn-beijing.volces.com/api/v3',
+                api_key: '',
+                model_name: 'ep-xxxxxxxxxxxxx'
+            },
+            kimi: {
+                name: 'Kimi',
+                base_url: 'https://api.moonshot.cn/v1',
+                api_key: '',
+                model_name: 'kimi-k2.6'
+            },
+            openai: {
+                name: 'OpenAI',
+                base_url: 'https://api.openai.com/v1',
+                api_key: '',
+                model_name: 'gpt-3.5-turbo'
+            }
+        };
+        
+        function checkLogin() {
+            const savedUser = localStorage.getItem('user');
+            if (!savedUser) {
+                alert('请先登录');
+                window.location.href = 'index.html';
+                return false;
+            }
+            currentUser = JSON.parse(savedUser);
+            return true;
+        }
+        
+        async function init() {
+            if (!checkLogin()) return;
+            
+            try {
+                await wsManager.connect();
+                setupMessageHandlers();
+                loadProviders();
+            } catch (error) {
+                console.error('连接失败:', error);
+            }
+        }
+        
+        function setupMessageHandlers() {
+            wsManager.on(MSG_ID.PROVIDERS_RESPONSE, (data) => {
+                providers = Array.isArray(data) ? data : [];
+                renderProviderList();
+            });
+            
+            wsManager.on(MSG_ID.ADD_PROVIDER, (data) => {
+                if (data.success) {
+                    loadProviders();
+                    hideAddForm();
+                } else {
+                    alert('添加失败');
+                }
+            });
+            
+            wsManager.on(MSG_ID.DELETE_PROVIDER, (data) => {
+                if (data.success) {
+                    selectedProvider = null;
+                    loadProviders();
+                    hideConfigForm();
+                }
+            });
+            
+            wsManager.on(MSG_ID.TEST_MODEL_RESPONSE, (data) => {
+                const testBtn = document.getElementById('testModelBtn');
+                if (testBtn) {
+                    testBtn.disabled = false;
+                    testBtn.textContent = '测试连接';
+                }
+                
+                if (data.success) {
+                    showTestResult(true, '连接成功！模型响应: ' + (data.response || 'OK'));
+                } else {
+                    showTestResult(false, '连接失败: ' + (data.message || '未知错误'));
+                }
+            });
+        }
+        
+        function showTestResult(success, message) {
+            // 移除已有的结果提示
+            const existingResult = document.getElementById('testResult');
+            if (existingResult) {
+                existingResult.remove();
+            }
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.id = 'testResult';
+            resultDiv.style.cssText = `
+                margin-top: 16px;
+                padding: 12px 16px;
+                border-radius: 6px;
+                font-size: 14px;
+                animation: slideIn 0.3s ease;
+                ${success 
+                    ? 'background: #e6f4ff; color: #10a37f; border: 1px solid #10a37f;' 
+                    : 'background: #fee; color: #dc3545; border: 1px solid #dc3545;'}
+            `;
+            resultDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 18px;">${success ? '✓' : '✗'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            const configForm = document.getElementById('configForm');
+            if (configForm) {
+                configForm.appendChild(resultDiv);
+                
+                // 3秒后自动移除
+                setTimeout(() => {
+                    resultDiv.style.opacity = '0';
+                    resultDiv.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => resultDiv.remove(), 500);
+                }, 5000);
+            }
+        }
+        
+        function loadProviders() {
+            wsManager.send({
+                id: MSG_ID.GET_PROVIDERS,
+                data: { user_id: currentUser.id }
+            });
+        }
+        
+        function renderProviderList() {
+            const listEl = document.getElementById('providerList');
+            
+            if (providers.length === 0) {
+                listEl.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                        <h3>暂无提供商</h3>
+                        <p>点击上方"添加"按钮创建新的模型配置</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            listEl.innerHTML = providers.map(p => `
+                <div class="provider-card ${selectedProvider?.id === p.id ? 'active' : ''}" 
+                     onclick="selectProvider(${p.id})">
+                    <div class="provider-icon">${getProviderIcon(p.type)}</div>
+                    <div class="provider-info">
+                        <div class="provider-name">${p.name}</div>
+                        <div class="provider-url">${p.base_url}</div>
+                    </div>
+                    <span class="provider-status">${p.type}</span>
+                </div>
+            `).join('');
+        }
+        
+        function getProviderIcon(type) {
+            const icons = {
+                lmstudio: '🖥️',
+                ollama: '🦙',
+                deepseek: '🔍',
+                doubao: '📦',
+                kimi: '🌙',
+                openai: '🤖'
+            };
+            return icons[type] || '🤖';
+        }
+        
+        function selectProvider(id) {
+            selectedProvider = providers.find(p => p.id === id);
+            renderProviderList();
+            showConfigForm();
+        }
+        
+        function showAddForm() {
+            selectedProvider = null;
+            renderProviderList();
+            
+            const formEl = document.getElementById('configForm');
+            formEl.style.display = 'block';
+            formEl.innerHTML = `
+                <div class="config-form">
+                    <div class="form-header">
+                        <h3>添加提供商</h3>
+                        <div>
+                            <button class="save-btn" onclick="addProvider()">保存</button>
+                            <button class="delete-btn" onclick="hideConfigForm()">取消</button>
+                        </div>
+                    </div>
+                    
+                    <div class="preset-section">
+                        <h4>快速预设</h4>
+                        <div class="preset-buttons">
+                            <button class="preset-btn" onclick="applyPreset('lmstudio')">LM Studio</button>
+                            <button class="preset-btn" onclick="applyPreset('ollama')">Ollama</button>
+                            <button class="preset-btn" onclick="applyPreset('deepseek')">DeepSeek</button>
+                            <button class="preset-btn" onclick="applyPreset('doubao')">豆包</button>
+                            <button class="preset-btn" onclick="applyPreset('kimi')">Kimi</button>
+                            <button class="preset-btn" onclick="applyPreset('openai')">OpenAI</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>提供商名称 <span class="required">*</span></label>
+                        <input type="text" id="providerName" placeholder="例如：我的本地模型">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>类型 <span class="required">*</span></label>
+                            <select id="providerType">
+                                <option value="lmstudio">LM Studio</option>
+                                <option value="ollama">Ollama</option>
+                                <option value="deepseek">DeepSeek</option>
+                                <option value="doubao">豆包</option>
+                                <option value="kimi">Kimi</option>
+                                <option value="openai">OpenAI</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>API 密钥</label>
+                            <input type="password" id="providerApiKey" placeholder="本地模型可不填">
+                            <div class="form-hint">本地模型如 LM Studio、Ollama 无需填写</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>API 基础 URL <span class="required">*</span></label>
+                        <input type="text" id="providerBaseUrl" placeholder="例如：http://localhost:1234/v1">
+                        <div class="form-hint">OpenAI 兼容格式的 API 地址，通常以 /v1 结尾</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>模型名称 <span class="required">*</span></label>
+                        <input type="text" id="providerModelName" placeholder="例如：kimi-k2.6, deepseek-chat, gpt-3.5-turbo">
+                        <div class="form-hint">具体的模型名称，如 kimi-k2.6, moonshot-v1-8k, deepseek-chat 等</div>
+                    </div>
+                </div>
+            `;
+            
+            // 滚动到表单
+            formEl.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showConfigForm() {
+            if (!selectedProvider) return;
+            
+            const formEl = document.getElementById('configForm');
+            formEl.style.display = 'block';
+            formEl.innerHTML = `
+                <div class="config-form">
+                    <div class="form-header">
+                        <h3>配置提供商</h3>
+                        <div>
+                            <button class="save-btn" onclick="updateProvider()">保存</button>
+                            <button class="delete-btn" onclick="deleteProvider()">删除</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>提供商名称 <span class="required">*</span></label>
+                        <input type="text" id="providerName" value="${selectedProvider.name}">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>类型</label>
+                            <input type="text" value="${selectedProvider.type}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>API 密钥</label>
+                            <input type="password" id="providerApiKey" value="${selectedProvider.api_key || ''}" placeholder="无">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>API 基础 URL <span class="required">*</span></label>
+                        <input type="text" id="providerBaseUrl" value="${selectedProvider.base_url}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>模型名称</label>
+                        <input type="text" id="providerModelName" value="${selectedProvider.model_name || ''}" placeholder="未设置">
+                        <div class="form-hint">具体的模型名称，如 kimi-k2.6, moonshot-v1-8k, deepseek-chat 等</div>
+                    </div>
+                    
+                    <div class="models-section">
+                        <h4>模型测试</h4>
+                        <div class="model-list">
+                            <div class="model-item">
+                                <span class="model-name">${selectedProvider.model_name || '默认模型'}</span>
+                                <div class="model-actions">
+                                    <button id="testModelBtn" class="btn-test" onclick="testConnection()">测试连接</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-hint" style="margin-top: 8px;">
+                            点击测试按钮验证模型连接是否正常，将发送一个简单的测试消息。
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            formEl.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function hideConfigForm() {
+            document.getElementById('configForm').style.display = 'none';
+            selectedProvider = null;
+            renderProviderList();
+        }
+        
+        function hideAddForm() {
+            hideConfigForm();
+        }
+        
+        function applyPreset(type) {
+            const preset = presets[type];
+            if (preset) {
+                document.getElementById('providerName').value = preset.name;
+                document.getElementById('providerType').value = type;
+                document.getElementById('providerBaseUrl').value = preset.base_url;
+                document.getElementById('providerApiKey').value = preset.api_key;
+                const modelNameInput = document.getElementById('providerModelName');
+                if (modelNameInput) {
+                    modelNameInput.value = preset.model_name;
+                }
+            }
+        }
+        
+        function addProvider() {
+            const name = document.getElementById('providerName').value.trim();
+            const type = document.getElementById('providerType').value;
+            const apiKey = document.getElementById('providerApiKey').value.trim();
+            const baseUrl = document.getElementById('providerBaseUrl').value.trim();
+            const modelName = document.getElementById('providerModelName').value.trim();
+            
+            if (!name || !type || !baseUrl || !modelName) {
+                alert('请填写必填项');
+                return;
+            }
+            
+            wsManager.send({
+                id: MSG_ID.ADD_PROVIDER,
+                data: {
+                    user_id: currentUser.id,
+                    name: name,
+                    type: type,
+                    api_key: apiKey,
+                    base_url: baseUrl,
+                    model_name: modelName
+                }
+            });
+        }
+        
+        function updateProvider() {
+            alert('更新功能待实现');
+        }
+        
+        function deleteProvider() {
+            if (!selectedProvider) return;
+            
+            if (!confirm(`确定要删除提供商 "${selectedProvider.name}" 吗？`)) {
+                return;
+            }
+            
+            wsManager.send({
+                id: MSG_ID.DELETE_PROVIDER,
+                data: { provider_id: selectedProvider.id }
+            });
+        }
+        
+        function testConnection() {
+            if (!selectedProvider) {
+                alert('请先选择一个提供商');
+                return;
+            }
+            
+            const testBtn = document.getElementById('testModelBtn');
+            if (testBtn) {
+                testBtn.disabled = true;
+                testBtn.textContent = '测试中...';
+            }
+            
+            // 移除之前的测试结果
+            const existingResult = document.getElementById('testResult');
+            if (existingResult) {
+                existingResult.remove();
+            }
+            
+            wsManager.send({
+                id: MSG_ID.TEST_MODEL,
+                data: {
+                    user_id: currentUser.id,
+                    provider_name: selectedProvider.name
+                }
+            });
+        }
+        
+        init();
+    </script>
+</body>
+</html>

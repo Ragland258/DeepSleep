@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSleep AI Chat</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" onclick="createNewConversation()">
+                    <span>+</span> 新对话
+                </button>
+            </div>
+            <div class="conversation-list" id="conversationList">
+                <!-- 会话列表将在这里动态生成 -->
+            </div>
+            <div class="sidebar-footer">
+                <div class="user-info" id="userInfo">
+                    <span id="username">用户</span>
+                    <button id="userActionBtn" onclick="handleUserAction()">登录</button>
+                </div>
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5e5e5;">
+                    <a href="model-config.html" style="color: #666; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                        模型配置
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主聊天区域 -->
+        <main class="chat-container">
+            <div class="chat-header">
+                <h2 id="currentConversationTitle">新对话</h2>
+                <div class="header-controls">
+                    <label class="search-toggle" title="开启联网搜索，获取最新信息">
+                        <input type="checkbox" id="searchToggle" onchange="toggleSearch()">
+                        <span class="search-icon">🌐</span>
+                        <span class="search-label">联网</span>
+                    </label>
+                    <div class="model-selector-container">
+                        <label for="modelSelect" class="model-selector-label">当前模型</label>
+                        <div class="model-selector">
+                            <select id="modelSelect" onchange="selectModel(this.value)">
+                                <option value="">选择模型...</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <!-- 消息将在这里动态生成 -->
+            </div>
+
+            <!-- 居中的欢迎消息和输入框 -->
+            <div class="center-container" id="centerContainer">
+                <div class="welcome-message" id="welcomeMessage">
+                    <h1>DeepSleep AI</h1>
+                    <div class="mode-buttons">
+                        <button class="mode-btn active" onclick="selectMode('fast')">
+                            <span>⚡</span> 快速模式
+                        </button>
+                        <button class="mode-btn" onclick="selectMode('expert')">
+                            <span>🧠</span> 专家模式
+                        </button>
+                    </div>
+                </div>
+                <div class="chat-input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="输入消息..."
+                        rows="1"
+                        onkeydown="handleKeyDown(event)"
+                    ></textarea>
+                    <button class="send-btn" onclick="sendMessage()">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 登录弹窗 -->
+    <div class="modal" id="loginModal" style="display: none;">
+        <div class="modal-content">
+            <h2>登录</h2>
+            <input type="text" id="loginUsername" placeholder="用户名">
+            <input type="password" id="loginPassword" placeholder="密码">
+            <div class="modal-buttons">
+                <button onclick="login()">登录</button>
+                <button class="btn-secondary" onclick="closeModal()">取消</button>
+            </div>
+            <p>还没有账号？<a href="#" onclick="showRegister()">注册</a></p>
+        </div>
+    </div>
+
+    <!-- 注册弹窗 -->
+    <div class="modal" id="registerModal" style="display: none;">
+        <div class="modal-content">
+            <h2>注册</h2>
+            <input type="text" id="registerUsername" placeholder="用户名">
+            <input type="password" id="registerPassword" placeholder="密码">
+            <div class="modal-buttons">
+                <button onclick="register()">注册</button>
+                <button class="btn-secondary" onclick="closeModal()">取消</button>
+            </div>
+            <p>已有账号？<a href="#" onclick="showLogin()">登录</a></p>
+        </div>
+    </div>
+
+    <script src="websocket.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统提示词配置 - DeepSleep AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .config-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* 左侧边栏 */
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            border-right: 1px solid #e5e5e5;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .sidebar-header h1 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+        
+        .back-btn:hover {
+            color: #10a37f;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: 10px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .nav-item.active {
+            background: #e6f4ff;
+            color: #10a37f;
+            border-right: 3px solid #10a37f;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .content-header {
+            background: #fff;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .content-header h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .content-header p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .content-body {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        /* 提示词列表 */
+        .prompt-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-header h3 {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .add-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #10a37f;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .add-btn:hover {
+            background: #0d8c6d;
+        }
+        
+        /* 提示词卡片 */
+        .prompt-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .prompt-card {
+            padding: 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .prompt-card:hover {
+            border-color: #10a37f;
+            background: #f9f9f9;
+        }
+        
+        .prompt-card.active {
+            border-color: #10a37f;
+            background: #e6f4ff;
+        }
+        
+        .prompt-card.default {
+            border-left: 4px solid #10a37f;
+        }
+        
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .prompt-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .prompt-badge {
+            padding: 2px 8px;
+            background: #e6f4ff;
+            color: #10a37f;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .prompt-content {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        
+        /* 配置表单 */
+        .config-form {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .form-header h3 {
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group label .required {
+            color: #dc3545;
+            margin-left: 2px;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #10a37f;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 6px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .btn-primary {
+            padding: 10px 24px;
+            background: #10a37f;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: #0d8c6d;
+        }
+        
+        .btn-secondary {
+            padding: 10px 24px;
+            background: #fff;
+            color: #333;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+        
+        .btn-danger {
+            padding: 10px 24px;
+            background: #fff;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .btn-danger:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state h3 {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="config-container">
+        <!-- 左侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>DeepSleep AI</h1>
+                <a href="index.html" class="back-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    返回聊天
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item" onclick="location.href='model-config.html'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                        <line x1="8" y1="21" x2="16" y2="21"/>
+                        <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                    模型提供商
+                </div>
+                <div class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    系统提示词
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <div class="content-header">
+                <h2>系统提示词</h2>
+                <p>配置 AI 助手的系统提示词，定义 AI 的角色和行为。</p>
+            </div>
+            
+            <div class="content-body">
+                <!-- 提示词列表 -->
+                <div class="prompt-section">
+                    <div class="section-header">
+                        <h3>提示词列表</h3>
+                        <button class="add-btn" onclick="showAddForm()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                                <path d="M12 5v14M5 12h14"/>
+                            </svg>
+                            添加
+                        </button>
+                    </div>
+                    <div class="prompt-list" id="promptList">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 配置表单 -->
+                <div id="configForm" style="display: none;">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="websocket.js"></script>
+    <script>
+        let currentUser = null;
+        let prompts = [];
+        let selectedPrompt = null;
+        
+        // 预设提示词模板
+        const promptTemplates = {
+            assistant: {
+                name: '通用助手',
+                content: '你是一个有用的AI助手。请用中文回答用户的问题。'
+            },
+            programmer: {
+                name: '编程专家',
+                content: '你是一位资深的编程专家，擅长多种编程语言和技术栈。请提供清晰、准确的代码示例和技术解释。'
+            },
+            writer: {
+                name: '写作助手',
+                content: '你是一位专业的写作助手，擅长文章创作、文案撰写和文字润色。请帮助用户提升写作质量。'
+            },
+            translator: {
+                name: '翻译专家',
+                content: '你是一位专业的翻译专家，精通多国语言。请提供准确、自然的翻译服务。'
+            },
+            teacher: {
+                name: '教学助手',
+                content: '你是一位耐心的教学助手，擅长将复杂概念简单化。请用通俗易懂的方式解释知识点。'
+            }
+        };
+        
+        function checkLogin() {
+            const savedUser = localStorage.getItem('user');
+            if (!savedUser) {
+                alert('请先登录');
+                window.location.href = 'index.html';
+                return false;
+            }
+            currentUser = JSON.parse(savedUser);
+            return true;
+        }
+        
+        async function init() {
+            if (!checkLogin()) return;
+            
+            try {
+                await wsManager.connect();
+                setupMessageHandlers();
+                loadPrompts();
+            } catch (error) {
+                console.error('连接失败:', error);
+            }
+        }
+        
+        function setupMessageHandlers() {
+            wsManager.on(MSG_ID.PROMPTS_RESPONSE, (data) => {
+                prompts = Array.isArray(data) ? data : [];
+                renderPromptList();
+            });
+            
+            wsManager.on(MSG_ID.ADD_PROMPT, (data) => {
+                if (data.success) {
+                    loadPrompts();
+                    hideConfigForm();
+                } else {
+                    alert('添加失败');
+                }
+            });
+            
+            wsManager.on(MSG_ID.UPDATE_PROMPT, (data) => {
+                if (data.success) {
+                    loadPrompts();
+                    hideConfigForm();
+                } else {
+                    alert('更新失败');
+                }
+            });
+            
+            wsManager.on(MSG_ID.DELETE_PROMPT, (data) => {
+                if (data.success) {
+                    selectedPrompt = null;
+                    loadPrompts();
+                    hideConfigForm();
+                }
+            });
+            
+            wsManager.on(MSG_ID.SET_DEFAULT_PROMPT, (data) => {
+                if (data.success) {
+                    loadPrompts();
+                }
+            });
+        }
+        
+        function loadPrompts() {
+            wsManager.send({
+                id: MSG_ID.GET_PROMPTS,
+                data: { user_id: currentUser.id }
+            });
+        }
+        
+        function renderPromptList() {
+            const listEl = document.getElementById('promptList');
+            
+            if (prompts.length === 0) {
+                listEl.innerHTML = `
+                    <div class="empty-state">
+                        <h3>暂无提示词</h3>
+                        <p>点击上方"添加"按钮创建新的系统提示词</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            listEl.innerHTML = prompts.map(p => `
+                <div class="prompt-card ${selectedPrompt?.id === p.id ? 'active' : ''} ${p.is_default ? 'default' : ''}" 
+                     onclick="selectPrompt(${p.id})">
+                    <div class="prompt-header">
+                        <div class="prompt-name">${p.name}</div>
+                        ${p.is_default ? '<span class="prompt-badge">默认</span>' : ''}
+                    </div>
+                    <div class="prompt-content">${p.content}</div>
+                </div>
+            `).join('');
+        }
+        
+        function selectPrompt(id) {
+            selectedPrompt = prompts.find(p => p.id === id);
+            renderPromptList();
+            showConfigForm();
+        }
+        
+        function showAddForm() {
+            selectedPrompt = null;
+            renderPromptList();
+            
+            const formEl = document.getElementById('configForm');
+            formEl.style.display = 'block';
+            formEl.innerHTML = `
+                <div class="config-form">
+                    <div class="form-header">
+                        <h3>添加提示词</h3>
+                    </div>
+                    
+                    <div class="preset-section" style="margin-bottom: 20px; padding: 16px; background: #f9f9f9; border-radius: 8px;">
+                        <h4 style="font-size: 14px; color: #333; margin-bottom: 12px;">快速预设</h4>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <button onclick="applyTemplate('assistant')" style="padding: 6px 12px; background: #fff; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; cursor: pointer;">通用助手</button>
+                            <button onclick="applyTemplate('programmer')" style="padding: 6px 12px; background: #fff; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; cursor: pointer;">编程专家</button>
+                            <button onclick="applyTemplate('writer')" style="padding: 6px 12px; background: #fff; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; cursor: pointer;">写作助手</button>
+                            <button onclick="applyTemplate('translator')" style="padding: 6px 12px; background: #fff; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; cursor: pointer;">翻译专家</button>
+                            <button onclick="applyTemplate('teacher')" style="padding: 6px 12px; background: #fff; border: 1px solid #e5e5e5; border-radius: 4px; font-size: 12px; cursor: pointer;">教学助手</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>提示词名称 <span class="required">*</span></label>
+                        <input type="text" id="promptName" placeholder="例如：编程专家">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>提示词内容 <span class="required">*</span></label>
+                        <textarea id="promptContent" placeholder="定义AI的角色和行为..."></textarea>
+                        <div class="form-hint">系统提示词会作为对话的第一条消息发送给AI模型</div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isDefault">
+                        <label for="isDefault" style="margin: 0; font-weight: normal;">设为默认提示词</label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn-primary" onclick="addPrompt()">保存</button>
+                        <button class="btn-secondary" onclick="hideConfigForm()">取消</button>
+                    </div>
+                </div>
+            `;
+            
+            formEl.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showConfigForm() {
+            if (!selectedPrompt) return;
+            
+            const formEl = document.getElementById('configForm');
+            formEl.style.display = 'block';
+            formEl.innerHTML = `
+                <div class="config-form">
+                    <div class="form-header">
+                        <h3>编辑提示词</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>提示词名称 <span class="required">*</span></label>
+                        <input type="text" id="promptName" value="${selectedPrompt.name}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>提示词内容 <span class="required">*</span></label>
+                        <textarea id="promptContent">${selectedPrompt.content}</textarea>
+                        <div class="form-hint">系统提示词会作为对话的第一条消息发送给AI模型</div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isDefault" ${selectedPrompt.is_default ? 'checked' : ''}>
+                        <label for="isDefault" style="margin: 0; font-weight: normal;">设为默认提示词</label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn-primary" onclick="updatePrompt()">保存</button>
+                        ${!selectedPrompt.is_default ? `<button class="btn-secondary" onclick="setAsDefault()">设为默认</button>` : ''}
+                        <button class="btn-danger" onclick="deletePrompt()">删除</button>
+                        <button class="btn-secondary" onclick="hideConfigForm()">取消</button>
+                    </div>
+                </div>
+            `;
+            
+            formEl.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function hideConfigForm() {
+            document.getElementById('configForm').style.display = 'none';
+            selectedPrompt = null;
+            renderPromptList();
+        }
+        
+        function applyTemplate(templateKey) {
+            const template = promptTemplates[templateKey];
+            if (template) {
+                document.getElementById('promptName').value = template.name;
+                document.getElementById('promptContent').value = template.content;
+            }
+        }
+        
+        function addPrompt() {
+            const name = document.getElementById('promptName').value.trim();
+            const content = document.getElementById('promptContent').value.trim();
+            const isDefault = document.getElementById('isDefault').checked;
+            
+            if (!name || !content) {
+                alert('请填写必填项');
+                return;
+            }
+            
+            wsManager.send({
+                id: MSG_ID.ADD_PROMPT,
+                data: {
+                    user_id: currentUser.id,
+                    name: name,
+                    content: content,
+                    is_default: isDefault
+                }
+            });
+        }
+        
+        function updatePrompt() {
+            if (!selectedPrompt) return;
+            
+            const name = document.getElementById('promptName').value.trim();
+            const content = document.getElementById('promptContent').value.trim();
+            const isDefault = document.getElementById('isDefault').checked;
+            
+            if (!name || !content) {
+                alert('请填写必填项');
+                return;
+            }
+            
+            wsManager.send({
+                id: MSG_ID.UPDATE_PROMPT,
+                data: {
+                    prompt_id: selectedPrompt.id,
+                    name: name,
+                    content: content,
+                    is_default: isDefault
+                }
+            });
+        }
+        
+        function setAsDefault() {
+            if (!selectedPrompt) return;
+            
+            wsManager.send({
+                id: MSG_ID.SET_DEFAULT_PROMPT,
+                data: {
+                    prompt_id: selectedPrompt.id,
+                    name: selectedPrompt.name,
+                    content: selectedPrompt.content
+                }
+            });
+        }
+        
+        function deletePrompt() {
+            if (!selectedPrompt) return;
+            
+            if (!confirm(`确定要删除提示词 "${selectedPrompt.name}" 吗？`)) {
+                return;
+            }
+            
+            wsManager.send({
+                id: MSG_ID.DELETE_PROMPT,
+                data: { prompt_id: selectedPrompt.id }
+            });
+        }
+        
+        init();
+    </script>
+</body>
+</html>
