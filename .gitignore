@@ -5,3 +5,8 @@ deepsleep
 *.pyc
 __pycache__/
 nohup.out
+.vscode/
+*.exe
+*.log
+*.bak
+nohup.out
